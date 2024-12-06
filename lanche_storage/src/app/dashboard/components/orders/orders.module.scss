@@ -1,0 +1,66 @@
+.container {
+    max-width: 720px;
+    margin: 20px auto;
+    padding: 0 16px;
+
+
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+
+
+    h1 {
+        color: var(--white);
+    }
+
+    .containerHeader {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+        gap: 14px;
+
+
+        button {
+            background: transparent;
+            border: 0;
+        }
+    }
+
+    .listOrders {
+        display: flex;
+        gap: 16px;
+        flex-direction: column;
+
+    }
+
+    .orderItem {
+        display: flex;
+        background-color: var(--dark-900);
+        align-items: center;
+        border: 0;
+        font-size: 20px;
+        border-radius: 8px;
+        color: var(--white);
+
+
+        .tag {
+            width: 10px;
+            height: 30px;
+            border-radius: 8px 0 0 8px;
+            background-color: #3fffaf;
+            display: flex;
+            align-self: flex-start;
+        }
+
+        span {
+            margin-left: 10px;
+        }
+    }
+
+  
+   
+
+
+}
+
+

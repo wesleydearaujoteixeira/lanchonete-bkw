@@ -89,7 +89,7 @@ export default function Page() {
               Cadastrar
             </button>
           </form>
-          <Link href="/login" className={styles.text}>
+          <Link href="/" className={styles.text}>
             já possui uma conta? <span> Faça Login </span>
           </Link>
         </section>

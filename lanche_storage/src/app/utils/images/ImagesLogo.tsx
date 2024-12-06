@@ -17,6 +17,7 @@ export const ImagesLogo = ({height, width}:ImagesLogo) => {
           width={width}
           priority
           alt="Logo da pizzaria"
+          quality={100}
         />
         </div>
     )
