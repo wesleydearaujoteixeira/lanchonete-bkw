@@ -1,4 +1,5 @@
 import Header from "./components/header/Header";
+import { ProviderContext } from "../providers/order";
 
 export default function DashboardLayout({
     children,
@@ -8,7 +9,9 @@ export default function DashboardLayout({
     return (
         <div>
             <Header/>
-            {children}
+            <ProviderContext> 
+                {children}
+            </ProviderContext>
         </div>
     );
   }

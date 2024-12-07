@@ -5,6 +5,7 @@ import styles from './header.module.scss';
 import { ImagesLogo } from '@/app/utils/images/ImagesLogo';
 import { FiLogOut } from "react-icons/fi";
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 
 
@@ -22,6 +23,7 @@ const Header = () => {
 
             setTimeout(() => {
                 document.cookie = "session=; max-age=0; path=/;";
+                toast.success('Logout realizado com sucesso!');
                 router.push("/");
             }, 1000);
         }
