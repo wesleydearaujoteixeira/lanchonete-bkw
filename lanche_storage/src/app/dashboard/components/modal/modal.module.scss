@@ -65,3 +65,23 @@
     border-radius: 8px;
     font-size: 1rem;
 }
+
+.imageItem {
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.priceAmount {
+    margin-top: 5px;
+
+    span {
+        color: var(--green-900);
+    }
+
+}
+
+
+.totalPedido {
+    color: #CCC;
+    margin: 15px 0 15px 0;
+}

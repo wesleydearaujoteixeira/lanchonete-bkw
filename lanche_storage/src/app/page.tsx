@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { server } from '@/services/globalApi';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const schema = z.object({
   email: z.string().email({ message: 'Digite um email válido' }),
@@ -52,6 +53,7 @@ export default function Page() {
       }
     } catch (error) {
       console.error('Erro ao realizar login:', error);
+      toast.warning("Login mal sucedido! ");
     }
   };
 

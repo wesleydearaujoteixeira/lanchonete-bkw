@@ -93,7 +93,9 @@ const Orders = () => {
                                 </button>
                             ))
                         ) : (
-                            <p>Nenhum pedido encontrado.</p>  // Exibe mensagem caso não haja pedidos
+                            <div className={styles.messageAlert} > 
+                                <h2>Nenhum pedido encontrado.</h2>
+                            </div>  // Exibe mensagem caso não haja pedidos
                         )}
                     </>
                 )}

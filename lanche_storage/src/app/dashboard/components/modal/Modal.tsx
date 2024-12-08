@@ -7,6 +7,8 @@ import { OrderContext } from '@/app/providers/order';
 import { server } from '@/services/globalApi';
 import { toast } from 'sonner';
 import { getCookie } from '@/lib/cookiesClient';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 
 
@@ -45,6 +47,19 @@ interface Product {
   // Tipagem para o array de orders
   type Orders = OrderItem[];
   
+const TotalOrders = (order: OrderItem[]) => {
+
+    const Total = order.reduce((total, item) => {
+        
+        const itemTotal = parseFloat(item.product.price) * item.amount;
+        return total + itemTotal;
+
+    }, 0);
+
+    return Total.toFixed(2);
+
+}
+
 
 
 const Modal = () => {
@@ -53,6 +68,8 @@ const Modal = () => {
     const {onRequestClose, order_id} = useContext(OrderContext);
 
     const [orderDetail, setOrderDetail] = useState  <Orders> ([]);
+
+    const router = useRouter();
 
 
     const handleClose = () => {
@@ -89,6 +106,34 @@ const Modal = () => {
     }, []);
 
 
+    const finishOrder = async () => {
+        try {
+            
+            const response = await server.put(`finish/${order_id}`, {},{
+                headers: {
+                    Authorization: `Bearer ${getCookie("session")}`,
+                },
+            });
+
+            console.log(response.data);
+
+
+            toast.success("Pedido finalizado com sucesso!");
+            onRequestClose();
+            router.refresh();
+
+        
+        }
+        catch (error) {
+            console.error('Erro ao finalizar o pedido:', error);
+            toast.error("Erro ao finalizar o pedido!");
+            
+        }
+
+
+}
+
+
   return (
     <div className={style.dialogContainer}>
 
@@ -98,33 +143,55 @@ const Modal = () => {
             </button>
 
 
-            {orderDetail.length > 0 && orderDetail.map((item, index) => {
+            {orderDetail.length > 0 && orderDetail.map((item) => {
                 return (
             <article key={item.id} className={style.container}>
                 <h2> Detalhes do Pedido </h2>
 
                 <span className={style.table}> 
-                    Mesa <b>{item.order.table}</b>
+                    Mesa <b> {item.order.name} - {item.order.table}º </b>
                 </span>
-
+               
+               
 
                 <section className={style.item} >
-                    <span>
-                        1 - <b> {item.product.name}  </b>
-                    </span>
-                    <span> {item.product.description} </span>
+                    <div>
+                        <span>
+                            {item.amount} - <b> {item.product.name}  </b>
+                        </span>
+                        <span> {item.product.description} </span>
+                    </div>
+
+                    <div className={style.priceAmount} >
+                        <span>
+                            R$ {(parseFloat(item.product.price) * item.amount).toFixed(2) }
+                        </span>
+                    </div>
+
+                    <div>
+                    <Image
+                        src={`${process.env.NEXT_PUBLIC_API}`+item.product.banner}
+                        alt={item.product.name}
+                        width={80}
+                        height={80}
+                        className={style.imageItem}
+                    />
+                    </div>
                 </section>
 
-                <button className={style.btnOrder}>
-                    Concluir Pedido
-                </button>
+              
 
             </article>   
                 )
 
             })}
 
-            
+
+            <h3 className={style.totalPedido} > Total do Pedido  R$ {TotalOrders(orderDetail)} </h3>
+
+              <button className={style.btnOrder} onClick={()=> finishOrder()}>
+                    Concluir Pedido
+                </button>
 
         </section>
     </div>

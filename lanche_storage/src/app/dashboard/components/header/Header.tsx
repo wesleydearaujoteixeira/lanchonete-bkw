@@ -43,6 +43,15 @@ const Header = () => {
 
 
                 <nav>
+
+                    <Link href="/dashboard/openTable">
+                        Abrir Mesa
+                    </Link>
+
+                    <Link href="/dashboard/order">
+                        Fazer Pedidos
+                    </Link>
+
                     <Link href="/dashboard/category">
                         Categoria
                     </Link>
