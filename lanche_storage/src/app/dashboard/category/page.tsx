@@ -8,6 +8,8 @@ import { server } from '@/services/globalApi';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { removeQuotes } from '@/app/utils/removeString';
+import { getCookie } from '@/lib/cookiesClient'; // Importando a lib js-cookie
 
 const schema = z.object({
   name: z
@@ -19,11 +21,11 @@ type FormData = z.infer<typeof schema>;
 
 const Category = () => {
   const navigation = useRouter();
-  const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+  const [token, setToken] = useState<string>(''); // State para armazenar o token
 
   useEffect(() => {
-    // Garante que o token seja obtido apenas no client-side
-    const storedToken = localStorage.getItem('token');
+    // Garante que o token seja obtido apenas no client-side usando cookies
+    const storedToken = getCookie('token') || ''; // Alterado para usar getCookie da js-cookie
     setToken(storedToken);
   }, []);
 
@@ -36,7 +38,7 @@ const Category = () => {
     try {
       const response = await server.post('category', data, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${removeQuotes(token)}`, // Utilizando o token obtido pelos cookies
         },
       });
       console.log('Resposta do server:', response.data);

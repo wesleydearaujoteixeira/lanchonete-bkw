@@ -2,7 +2,6 @@
 
 import { useState, FormEvent, useEffect, useContext } from 'react';
 import styles from './order.module.scss';
-import { getCookie } from "@/lib/cookiesClient";
 import { server } from '@/services/globalApi';
 import Button from '../components/button/Button';
 import { toast } from 'sonner';
@@ -13,12 +12,8 @@ import Image from 'next/image';
 import { IoAdd } from "react-icons/io5";
 import { IoIosRemove } from "react-icons/io";
 import { OrderContext } from '@/app/providers/order';
-
-
 import { useRouter } from 'next/navigation';
-
-
-
+import Cookies from 'js-cookie'; // Importa js-cookie
 
 // Definindo o esquema de validação com zod
 const schema = z.object({
@@ -29,8 +24,6 @@ type FormData = z.infer<typeof schema>;
 
 const Order = () => {
 
-
-
   type ProductType = {
     product_id: string;
     name: string;
@@ -39,29 +32,14 @@ const Order = () => {
     banner: string; // A URL da imagem
   };
 
-
   const router = useRouter();
 
-
-  const [token, setToken] = useState<string | null>(null); // State para armazenar o token
-
-    useEffect(() => {
-      // Garante que o token seja obtido apenas no client-side
-      const storedToken = localStorage.getItem('token');
-      setToken(storedToken);
-    }, []);
-
-
+  const [token, setToken] = useState<string>(''); // State para armazenar o token
   const [products, setProducts] = useState<ProductType[]>([]);
-  const [productID, setProductID] = useState<string>('');
+  const [productID, setProductID] = useState<string>(''); 
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
   const [quantity, setQuantity] = useState(1); // Variável para quantidade do produto
-
-
   const { table_order } = useContext(OrderContext);
-
-
-
 
   // Carregar produtos
   const loadProducts = async () => {
@@ -81,9 +59,19 @@ const Order = () => {
     }
   };
 
+  // Recuperar o token dos cookies ao carregar a página
   useEffect(() => {
-    loadProducts();
+    const storedToken = Cookies.get('token'); // Obtém o token do cookie
+    if (storedToken) {
+      setToken(storedToken); // Define o token no estado
+    }
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      loadProducts();
+    }
+  }, [token]); // Carregar os produtos após o token ser definido
 
   // Usando react-hook-form com zodResolver para validação
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -94,7 +82,7 @@ const Order = () => {
     try {
       const response = await server.post('add_item', {
         order_id: table_order, // Coloque o ID da ordem aqui
-        product_id: data.productID, 
+        product_id: data.productID,
         amount: quantity, // Enviando a quantidade selecionada
       }, {
         headers: {
@@ -104,9 +92,7 @@ const Order = () => {
 
       toast.success("Produto adicionado com sucesso!");
       router.push('/dashboard');
-
       
-
     } catch (error) {
       toast.warning("Erro ao adicionar produto!");
       console.error('Erro ao adicionar o produto:', error);
@@ -126,16 +112,13 @@ const Order = () => {
     setQuantity(value);
   };
 
-
   const handleRemove = () => {
-
-    if(quantity <= 0) {
+    if (quantity <= 0) {
       toast.warning("Não é possível remover um item com quantidade negativa!");
       return;
     }
     return setQuantity(quantity - 1);
-
-  }
+  };
 
   return (
     <main className={styles.container}>
@@ -180,20 +163,14 @@ const Order = () => {
             <label htmlFor="quantity"> Quantidade:  {quantity}  </label>
             
             <span className={styles.qtdBtn} >
-
               <IoAdd size={20} className={styles.addButton} onClick={() => setQuantity(quantity + 1)} />
-              <IoIosRemove size={20} className={styles.removeBtn} onClick={() => handleRemove()} />
-
+              <IoIosRemove size={20} className={styles.removeBtn} onClick={handleRemove} />
             </span>
-
-
-
           </div>
         )}
 
-          <Button text="Enviar Pedido" />
+        <Button text="Enviar Pedido" />
       </form>
-
     </main>
   );
 };

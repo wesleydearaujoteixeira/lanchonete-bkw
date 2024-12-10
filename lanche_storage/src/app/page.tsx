@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { server } from '@/services/globalApi';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie'; 
 
 const schema = z.object({
   email: z.string().email({ message: 'Digite um email válido' }),
@@ -33,24 +34,26 @@ export default function Page() {
       const response = await server.post('login', data);
       console.log('Resposta do server:', response.data.user);
 
-      if (response.status === 200) {
-        // Define o cookie no cliente
-        const expressTime = 60 * 60 * 24 * 30; // 30 dias em segundos
-        
-        
-        const token = localStorage.setItem("token", JSON.stringify(response.data.user.token));
-        const id = localStorage.setItem("user_id", JSON.stringify(response.data.user.user_id));
+      // Define os cookies no cliente
+      Cookies.set('token', response.data.user.token, {
+        expires: 7, // Expira em 7 dias
+        secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
+        sameSite: 'Strict', // Previne envios cross-site
+        path: '/', // Disponível em toda a aplicação
+      });
 
-        
+      Cookies.set('user_id', response.data.user.user_id, {
+        expires: 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict',
+        path: '/',
+      });
 
-        // Redireciona para o dashboard
-        navigation.push('/dashboard');
-      } else {
-        console.error('Erro inesperado no login:', response.statusText);
-      }
+      // Redireciona para o dashboard
+      navigation.push('/dashboard/product');
     } catch (error) {
       console.error('Erro ao realizar login:', error);
-      toast.warning("Login mal sucedido! ");
+      toast.warning('Login mal sucedido!');
     }
   };
 

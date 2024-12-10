@@ -7,6 +7,8 @@ import { server } from '@/services/globalApi';
 import { toast } from 'sonner';
 import { OrderContext } from '@/app/providers/order';
 import Modal from '../modal/Modal';
+import { removeQuotes } from '@/app/utils/removeString';
+import { getCookie } from '@/lib/cookiesClient'; // Importando a função para obter o cookie
 
 interface Orders {
     name: string;
@@ -21,47 +23,48 @@ interface Orders {
 const Orders = () => {
     const { isOpen, onRequestOpen } = useContext(OrderContext);
 
-    const [token, setToken] = useState<string | null>(null);
     const [orders, setOrders] = useState<Orders[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // Obtém o token do localStorage no client-side
+    const [token, setToken] = useState<string | null>('');
+
+    // Obtém o token do cookie no client-side
     useEffect(() => {
-        const storedToken = localStorage.getItem('token');
+        const storedToken = getCookie('token'); // Usando js-cookie para obter o token
         setToken(storedToken);
     }, []);
 
-    // Função para carregar pedidos
-    const loadOrders = useCallback(async () => {
-        if (!token) return; // Certifica-se de que o token está disponível antes de executar a função
+    console.log(token);
 
-        setLoading(true);
-        try {
-            const response = await server.get('order', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+    useEffect(() => {
+        if (token) {
+            setTimeout(async () => {
+                setLoading(true);
+                try {
+                    const response = await server.get('order', {
+                        headers: {
+                            Authorization: `Bearer ${removeQuotes(token)}`, // Utilizando o token obtido por cookie
+                        },
+                    });
 
-            setOrders(response.data.orders);
-        } catch (error) {
-            toast.warning("Erro ao carregar os pedidos");
-            console.error("Erro ao carregar os pedidos:", error);
-        } finally {
-            setLoading(false);
+                    setOrders(response.data.orders);
+                } catch (error) {
+                    toast.warning("Erro ao carregar os pedidos");
+                    console.error("Erro ao carregar os pedidos:", error);
+                } finally {
+                    setLoading(false);
+                }
+            }, 100);
         }
     }, [token]);
 
-    // Carrega pedidos sempre que o token muda
-    useEffect(() => {
-        if (token) {
-            loadOrders();
-        }
-    }, [token, loadOrders]);
-
-    const handleOpen = (id: string) => {
-        onRequestOpen(id);
-    };
+    // Função para abrir o modal do pedido
+    const handleOpen = useCallback(
+        (id: string) => {
+            onRequestOpen(id);
+        },
+        [onRequestOpen]
+    );
 
     return (
         <>
@@ -72,7 +75,6 @@ const Orders = () => {
                         <TbRefresh
                             size={24}
                             color='#3fffa3'
-                            onClick={loadOrders}
                             style={{ cursor: 'pointer' }}
                         />
                     </span>

@@ -3,66 +3,51 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styles from './form.module.scss';
 import { MdOutlineFileUpload } from "react-icons/md";
-import { getCookie } from "@/lib/cookiesClient";
 import { server } from '@/services/globalApi';
 import Image from 'next/image';
 import Button from '../../components/button/Button';
 import { toast } from 'sonner';
+import Cookies from 'js-cookie'; // Importa js-cookie
 
 type CategoryType = {
   category_id: string;
   created_at: string;
   name: string;
   updated_at: string;
-}
-
+};
 
 const Form = () => {
-
- 
   const [image, setImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [categoryID, setCategoryID] = useState<string>('');
-  const [categories, setCategories] = useState <CategoryType[]> ([]);
-  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
 
-
-  const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+  // Obtém o token diretamente do cookie
+  const token = Cookies.get('token');
 
   useEffect(() => {
-    // Garante que o token seja obtido apenas no client-side
-    const storedToken = localStorage.getItem('token');
-    setToken(storedToken);
-  }, []);
+    if (token) {
+      const fetchCategories = async () => {
+        try {
+          const response = await server.get('category', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setCategories(response.data.category);
+        } catch (error) {
+          console.error('Erro ao carregar as categorias:', error);
+        }
+      };
 
-
-  // Carregar categorias
-  const loadCategories = async () => {
-    setLoadingCategories(true);
-    try {
-      const response = await server.get('category', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCategories(response.data.category);
-
-      console.log(response.data);
-
-    } catch (error) {
-      console.error('Erro ao carregar as categorias:', error);
-    } finally {
-      setLoadingCategories(false);
+      fetchCategories();
+    } else {
+      console.log('Token não encontrado');
     }
-  };
-
-  useEffect(() => {
-    loadCategories();
-
-  }, []);
+  }, [token]);
 
   // Manipular upload de arquivo
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -79,9 +64,6 @@ const Form = () => {
     }
   };
 
-  // Resetar formulário
-  
-
   // Submeter formulário
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -96,17 +78,14 @@ const Form = () => {
     try {
       const response = await server.post('products', formData, {
         headers: {
-          Authorization: `Bearer ${getCookie("session")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
-
-      toast.success("Produto Cadastrado com sucesso!")
+      toast.success("Produto Cadastrado com sucesso!");
       console.log(response.data);
-    
-    
     } catch (error) {
-      toast.warning("Erro ao cadastrar produto!")
+      toast.warning("Erro ao cadastrar produto!");
       console.error('Erro ao cadastrar o produto:', error);
     }
   };
@@ -137,7 +116,6 @@ const Form = () => {
                 className={styles.previewImage}
                 quality={100}
               />
-            
             </div>
           )}
         </label>
@@ -150,7 +128,6 @@ const Form = () => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           className={styles.inputText}
-
           required
         />
 
@@ -167,28 +144,20 @@ const Form = () => {
         />
 
         {/* Categorias */}
-          <select
-              value={categoryID}
-              onChange={(e) => setCategoryID(e.target.value)}
-              required 
-              className={styles.select}
-            >
-              <option value="">Selecione uma Categoria</option>
-              {loadingCategories ? (
-                <option disabled>Carregando categorias...</option>
-              ) : (
-                categories.length  > 0 ? (
-                  categories.map((categorie) => (
-                    <option key={categorie.category_id} value={categorie.category_id}>
-                      {categorie.name}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>Nenhuma categoria encontrada</option>
-                )
-              )}
+        <select
+          value={categoryID}
+          onChange={(e) => setCategoryID(e.target.value)}
+          required
+          className={styles.select}
+        >
+          <option value="">Selecione uma Categoria</option>
+          {categories.length > 0 &&
+            categories.map((categorie) => (
+              <option key={categorie.category_id} value={categorie.category_id}>
+                {categorie.name}
+              </option>
+            ))}
         </select>
-
 
         {/* Descrição */}
         <textarea
@@ -201,9 +170,7 @@ const Form = () => {
         />
 
         {/* Botão de submit */}
-       
-        <Button text="Cadastrar Produto"/>
-
+        <Button text="Cadastrar Produto" />
       </form>
     </main>
   );
