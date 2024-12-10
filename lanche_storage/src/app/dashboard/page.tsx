@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
  const Dash = () => {
 
 
-    const [token, setToken] = useState<string | null>(null); // State para armazenar o token
-
+    const [token, setToken] = useState<string | null>(null); 
     useEffect(() => {
       // Garante que o token seja obtido apenas no client-side
       const storedToken = localStorage.getItem('token');

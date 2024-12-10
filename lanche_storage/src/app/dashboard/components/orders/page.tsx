@@ -25,6 +25,14 @@ const Orders = () => {
 
     const { isOpen, onRequestOpen } = useContext(OrderContext);
 
+    const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+
+    useEffect(() => {
+      // Garante que o token seja obtido apenas no client-side
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+    }, []);
+
     const [orders, setOrders] = useState<Orders[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -34,7 +42,7 @@ const Orders = () => {
         try {
             const response = await server.get('order', {
                 headers: {
-                    Authorization: `Bearer ${getCookie("session")}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
