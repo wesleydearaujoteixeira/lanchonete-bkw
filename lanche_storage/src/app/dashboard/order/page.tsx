@@ -98,7 +98,7 @@ const Order = () => {
         amount: quantity, // Enviando a quantidade selecionada
       }, {
         headers: {
-          Authorization: `Bearer ${getCookie("session")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
