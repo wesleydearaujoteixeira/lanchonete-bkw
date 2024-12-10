@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { getCookie } from '@/lib/cookiesClient';
 import { useRouter } from 'next/navigation';
 import { OrderContext } from '@/app/providers/order';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 // Esquema de validação com Zod
 const schema = z.object({
@@ -32,7 +32,13 @@ const Table = () => {
   const { isTableOpen } = useContext(OrderContext);
 
   // Recuperar o token usando cookies (substituindo localStorage)
-  const token = getCookie('token');
+  const [token, setToken] = useState<string>(''); // State para armazenar o token
+
+    useEffect(() => {
+        // Garante que o token seja obtido apenas no client-side usando cookies
+        const storedToken = getCookie('token') || ''; // Alterado para usar getCookie da js-cookie
+        setToken(storedToken);
+    }, []);
 
   // Hook para gerenciar formulário
   const {
