@@ -1,3 +1,5 @@
+'use client';
+
 import Form from "./formProducts/Form";
 
 export default function Products () {
