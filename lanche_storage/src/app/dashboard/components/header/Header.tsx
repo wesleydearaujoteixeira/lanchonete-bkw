@@ -22,7 +22,8 @@ const Header = () => {
 
 
             setTimeout(() => {
-                document.cookie = "session=; max-age=0; path=/;";
+
+                localStorage.removeItem('token');
                 toast.success('Logout realizado com sucesso!');
                 router.push("/");
             }, 1000);

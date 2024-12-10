@@ -38,13 +38,10 @@ export default function Page() {
         const expressTime = 60 * 60 * 24 * 30; // 30 dias em segundos
         
         
-        document.cookie = `session=${response.data.user.token}; max-age=${expressTime}; path=/; ${
-          process.env.NODE_ENV === 'production' ? 'Secure;' : ''
-        }`;
+        const token = localStorage.setItem("token", JSON.stringify(response.data.user.token));
+        const id = localStorage.setItem("user_id", JSON.stringify(response.data.user.user_id));
 
-        document.cookie = `user_id=${response.data.user.user_id}; max-age=${expressTime}; path=/; ${
-          process.env.NODE_ENV === 'production' ? 'Secure;' : ''
-        }`;
+        
 
         // Redireciona para o dashboard
         navigation.push('/dashboard');

@@ -30,13 +30,22 @@ const Form = () => {
   const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
 
 
+  const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+
+  useEffect(() => {
+    // Garante que o token seja obtido apenas no client-side
+    const storedToken = localStorage.getItem('token');
+    setToken(storedToken);
+  }, []);
+
+
   // Carregar categorias
   const loadCategories = async () => {
     setLoadingCategories(true);
     try {
       const response = await server.get('category', {
         headers: {
-          Authorization: `Bearer ${getCookie("session")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       setCategories(response.data.category);

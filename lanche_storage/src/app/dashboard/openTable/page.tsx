@@ -10,7 +10,7 @@ import { getCookie } from '@/lib/cookiesClient';
 import { useRouter } from 'next/navigation';
 
 import { OrderContext } from '@/app/providers/order';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 
 const schema = z.object({
@@ -31,7 +31,14 @@ type FormData = z.infer <typeof schema>
 const Table = () => {
 
     const navigation = useRouter();
-    const token = getCookie("session"); 
+
+    const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+
+    useEffect(() => {
+      // Garante que o token seja obtido apenas no client-side
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+    }, []);
 
     const { isTableOpen } = useContext(OrderContext); 
 

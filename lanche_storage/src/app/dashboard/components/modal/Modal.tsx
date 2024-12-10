@@ -64,6 +64,14 @@ const TotalOrders = (order: OrderItem[]) => {
 
 const Modal = () => {
 
+    const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+
+    useEffect(() => {
+      // Garante que o token seja obtido apenas no client-side
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+    }, []);
+
 
     const {onRequestClose, order_id} = useContext(OrderContext);
 
@@ -81,7 +89,7 @@ const Modal = () => {
             
             const response = await server.get(`details_table/${order_id}`,{
                 headers: {
-                    Authorization: `Bearer ${getCookie("session")}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 

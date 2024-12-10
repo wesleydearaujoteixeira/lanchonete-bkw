@@ -43,6 +43,15 @@ const Order = () => {
   const router = useRouter();
 
 
+  const [token, setToken] = useState<string | null>(null); // State para armazenar o token
+
+    useEffect(() => {
+      // Garante que o token seja obtido apenas no client-side
+      const storedToken = localStorage.getItem('token');
+      setToken(storedToken);
+    }, []);
+
+
   const [products, setProducts] = useState<ProductType[]>([]);
   const [productID, setProductID] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
@@ -59,7 +68,7 @@ const Order = () => {
     try {
       const response = await server.get('products', {
         headers: {
-          Authorization: `Bearer ${getCookie("session")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
