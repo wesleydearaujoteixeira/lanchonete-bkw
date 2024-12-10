@@ -1,3 +1,5 @@
+'use client'
+
 import Header from "./components/header/Header";
 import { ProviderContext } from "../providers/order";
 
