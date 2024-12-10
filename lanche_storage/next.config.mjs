@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: true,
     images: {
-      domains: ['localhost'], // Adicione os domínios permitidos
+      domains: ['res.cloudinary.com'], // Adicione os domínios permitidos
     },
   };
   

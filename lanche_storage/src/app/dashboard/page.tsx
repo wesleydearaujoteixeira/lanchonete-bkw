@@ -7,7 +7,6 @@ import Orders from "./components/orders/page";
 
 
     const token = getCookie("session");
-    const id = getCookie("user_id");
 
     const router = useRouter();
 

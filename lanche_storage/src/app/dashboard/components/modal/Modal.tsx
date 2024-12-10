@@ -170,7 +170,7 @@ const Modal = () => {
 
                     <div>
                     <Image
-                        src={`${process.env.NEXT_PUBLIC_API}`+item.product.banner}
+                        src={item.product.banner}
                         alt={item.product.name}
                         width={80}
                         height={80}

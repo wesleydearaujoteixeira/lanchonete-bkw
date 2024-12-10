@@ -1,5 +1,5 @@
 import axios from 'axios';
 
 export const server = axios.create({
-   baseURL: 'http://localhost:3333/system/' 
+   baseURL: 'https://pizza-system-mocha.vercel.app/system/' 
 });

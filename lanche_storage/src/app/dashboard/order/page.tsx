@@ -156,7 +156,7 @@ const Order = () => {
           <div className={styles.productImage}>
             <h3>{selectedProduct.name}</h3>
             <Image
-              src={`${process.env.NEXT_PUBLIC_API}` + selectedProduct.banner}
+              src={selectedProduct.banner}
               alt={selectedProduct.name}
               className={styles.productImage}
               width={300}
